@@ -4,12 +4,13 @@ import ApiError from '../../errorHandlers/ApiError';
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import config from '../../config/config';
+import { VoteModel } from '../vote/vote.model';
 
-const createPollIntoDB = async (payload: { question: any; options: string[]; expiresIn: any; hideResults: any; }) => {
-    const { question, options, expiresIn, hideResults } = payload;
+const createPollIntoDB = async (payload: { question: any; options: string[]; expiration: any; hideResults: any; }) => {
+    const { question, options, expiration, hideResults } = payload;
     const pollId = uuidv4();
 
-    const expiresAt = new Date(Date.now() + expiresIn * 3600000).getTime();
+    const expiresAt = new Date(Date.now() + expiration * 3600000).getTime();
     if (isNaN(expiresAt)) {
         throw new ApiError(400, "Invalid Date");
     }
@@ -28,20 +29,30 @@ const createPollIntoDB = async (payload: { question: any; options: string[]; exp
 
     await PollModel.create(pollData);
 
-    return { pollLink: `${config.clientBaseUrl}/poll/${pollId}` }
+    return { pollId, }
 
 }
 
-const getAPollFromDB = async (pollId: string) => {
+const getAPollFromDB = async (pollId: string, userIp: string) => {
 
-    const poll = await PollModel.findOne({ pollId }).select("-votes");
+    const poll = await PollModel.findOne({ pollId }).lean();
 
     if (!poll) throw new ApiError(httpStatus.NOT_FOUND, "'Poll not found'");
 
     // Check if poll has expired
     if (Date.now() > poll.expiresAt) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Poll has expired");
+        poll.hideResults = false
+        return poll
     }
+
+    // Check if user has already voted
+    const isVoted = await VoteModel.findOne({ pollId, userIp }).lean();
+    if (isVoted) {
+        if (!poll.hideResults) {
+            return poll
+        }
+    }
+    poll.votes = {}
     
     return poll
 }

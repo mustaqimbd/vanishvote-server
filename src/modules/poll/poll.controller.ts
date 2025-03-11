@@ -18,8 +18,10 @@ const createPoll = catchAsync(async (req: Request, res: Response) => {
 
 const getAPoll = catchAsync(async (req: Request, res: Response) => {
   const { pollId } = req.params;
+  const userIp = req.clientIp
   const result = await PollServices.getAPollFromDB(
-    pollId
+    pollId,
+    userIp as string
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -32,7 +34,7 @@ const reactionInPoll = catchAsync(async (req: Request, res: Response) => {
   const { pollId } = req.params;
   const { reaction } = req.body;
   const userIp = req.clientIp
-  const result = await PollServices.reactionInPollIntoDB(
+  await PollServices.reactionInPollIntoDB(
     pollId,
     reaction,
     userIp as string
@@ -40,7 +42,7 @@ const reactionInPoll = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     message: 'Reaction recorded successfully!',
-    data: { result, reaction, pollId, userIp },
+    data: null
   });
 });
 

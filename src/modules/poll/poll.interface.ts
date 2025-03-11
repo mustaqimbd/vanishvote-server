@@ -6,6 +6,7 @@ export type TPoll = {
     reactions: Record<string, number>
     expiresAt: number;
     hideResults: boolean;
+    hasVoted: boolean;
 }
 
 export type TReaction = {

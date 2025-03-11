@@ -36,7 +36,7 @@ const voteInPollIntoDB = async (pollId: string, option: string, userIp: string) 
         // Atomically update vote count
         const updatedPoll = await PollModel.findOneAndUpdate(
             { pollId },
-            { $inc: { [`votes.${option}`]: 1 } },
+            { $inc: { [`votes.${option}`]: 1 }, hasVoted: false },
             { new: true, session }
         );
 
@@ -48,6 +48,7 @@ const voteInPollIntoDB = async (pollId: string, option: string, userIp: string) 
         );
 
         await session.commitTransaction();
+        return updatedPoll;
         return updatedPoll;
 
     } catch (error) {

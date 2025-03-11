@@ -12,7 +12,8 @@ const pollSchema = new Schema<TPoll>({
         default: { "🔥": 0, "👍": 0 }
     },
     expiresAt: { type: Number, required: true },
-    hideResults: { type: Boolean, default: false }
+    hideResults: { type: Boolean, default: false },
+    hasVoted: { type: Boolean, default: true }
 },
     { timestamps: true }
 );
