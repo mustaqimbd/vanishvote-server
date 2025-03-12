@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
-import { TErrorMessages, TIErrorResponse } from "../types/error";
+import { TErrorMessages, TIErrorResponse } from "../middlewares/error.interface";
+
 
 const handleMongooseDuplicateError = (err: Error): TIErrorResponse => {
   const errorField = err.message.split("{")[1].replace("}", "").split(":");

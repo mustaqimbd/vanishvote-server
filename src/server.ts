@@ -8,7 +8,7 @@ process.on("uncaughtException", (error) => {
 
 import { Server } from "http";
 import mongoose from "mongoose";
-import app from "./index";
+import app from ".";
 import config from "./config/config";
 
 let server: Server;

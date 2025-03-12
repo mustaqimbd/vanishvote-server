@@ -1,4 +1,5 @@
-import { TIErrorResponse } from "../types/error";
+
+import { TIErrorResponse } from "../middlewares/error.interface";
 import ApiError from "./ApiError";
 
 const handleApiError = (err: ApiError): TIErrorResponse => {
